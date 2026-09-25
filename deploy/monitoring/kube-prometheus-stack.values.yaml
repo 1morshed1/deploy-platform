@@ -1,0 +1,39 @@
+# Helm values for the kube-prometheus-stack chart.
+#
+#   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+#   helm install monitoring prometheus-community/kube-prometheus-stack \
+#     -n monitoring --create-namespace -f kube-prometheus-stack.values.yaml
+#
+# kube-prometheus-stack bundles Prometheus (via the Prometheus Operator),
+# Grafana, Alertmanager, node-exporter, and kube-state-metrics. That single chart
+# gives us per-pod CPU/memory/restart metrics for EVERY tenant pod automatically —
+# we don't have to instrument anything to get resource dashboards. See learning
+# doc 06.
+prometheus:
+  prometheusSpec:
+    # Discover PodMonitors/ServiceMonitors in ALL namespaces (each tenant has its
+    # own namespace), not just the release namespace.
+    podMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorNamespaceSelector: {}
+    serviceMonitorNamespaceSelector: {}
+    # Keep 7 days locally; a real deployment ships to long-term storage (Thanos/Mimir).
+    retention: 7d
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+
+grafana:
+  # For local dev only. In production use a Secret and an OAuth/SSO integration.
+  adminPassword: admin
+  # Auto-load dashboards from ConfigMaps labeled grafana_dashboard=1 (see the
+  # tenant dashboard ConfigMap in this directory).
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      searchNamespace: ALL
+
+# node-exporter + kube-state-metrics are enabled by default and provide the
+# container/pod metrics our dashboards query. Left at defaults.

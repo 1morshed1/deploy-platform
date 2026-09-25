@@ -1,0 +1,45 @@
+# Trivy image-scan Job TEMPLATE.
+#
+# The plan calls for scanning every built image and rejecting any with CRITICAL
+# CVEs before deploy. This manifest is the shape of that scan. Placeholders in
+# {{ }} are substituted per build (image URI, deployment id).
+#
+# HONEST STATUS: this scan is provided as a template and documented in learning
+# doc 08, but it is NOT wired into the Go build pipeline by default — the worker
+# builds and deploys without blocking on a scan. Enabling it means: after the
+# Kaniko build succeeds, create this Job, wait for completion, and only proceed to
+# create the TenantApp if the scan's exit code is 0. The exit-code contract below
+# (--exit-code 1 on CRITICAL) is exactly what makes that gating possible.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: scan-{{DEPLOYMENT_ID}}
+  namespace: platform-builds
+  labels:
+    app.kubernetes.io/managed-by: deploy-platform
+    platform.example.com/scan: "{{DEPLOYMENT_ID}}"
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: trivy
+          image: aquasec/trivy:0.55.0
+          args:
+            - image
+            - --severity=CRITICAL      # only fail on the worst class
+            - --exit-code=1            # non-zero exit => Job fails => gate the deploy
+            - --no-progress
+            - "{{IMAGE_URI}}"
+          volumeMounts:
+            - name: docker-config
+              mountPath: /root/.docker
+      volumes:
+        - name: docker-config
+          secret:
+            secretName: ecr-credentials
+            items:
+              - key: .dockerconfigjson
+                path: config.json

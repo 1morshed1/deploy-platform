@@ -1,0 +1,32 @@
+# A PodMonitor tells the Prometheus Operator to scrape a set of pods.
+#
+# This one selects every pod the platform manages (across all tenant namespaces)
+# by the shared managed-by label. Prometheus will scrape a "metrics" port if the
+# pod exposes one — i.e. this captures application-level metrics from tenants whose
+# apps export Prometheus metrics.
+#
+# NOTE: container CPU/memory/restart metrics do NOT depend on this — those come
+# from cAdvisor and kube-state-metrics for all pods automatically. This PodMonitor
+# is only for tenant apps that expose their own /metrics endpoint.
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: tenant-apps
+  namespace: monitoring
+  labels:
+    # Matches the sidecar/selector so Prometheus picks it up.
+    release: monitoring
+spec:
+  # Scrape pods in any namespace...
+  namespaceSelector:
+    any: true
+  # ...that carry our managed-by label.
+  selector:
+    matchLabels:
+      app.kubernetes.io/managed-by: deploy-platform
+  podMetricsEndpoints:
+    # Only pods that define a container port literally named "metrics" are scraped.
+    # Tenant apps opt in by naming a port "metrics"; others are simply skipped.
+    - port: metrics
+      path: /metrics
+      interval: 30s
