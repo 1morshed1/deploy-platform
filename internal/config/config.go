@@ -57,6 +57,11 @@ type Config struct {
 	// BuildNamespace is the Kubernetes namespace where Kaniko build Jobs run.
 	BuildNamespace string
 
+	// SystemNamespace is where the platform's own TenantApp custom resources
+	// live (one per deployment). The operator watches this namespace. Tenant
+	// workloads run in their OWN per-tenant namespaces, created by the operator.
+	SystemNamespace string
+
 	// RateLimitPerHour is the number of deploy requests each tenant may make
 	// per rolling hour. The plan specifies 5.
 	RateLimitPerHour int
@@ -84,6 +89,7 @@ func Load() (*Config, error) {
 		PlatformDomain:      getEnv("PLATFORM_DOMAIN", "apps.localhost"),
 		ECRRegistry:         getEnv("ECR_REGISTRY", "registry.local/tenants"),
 		BuildNamespace:      getEnv("BUILD_NAMESPACE", "platform-builds"),
+		SystemNamespace:     getEnv("SYSTEM_NAMESPACE", "platform-system"),
 		RateLimitPerHour:    5,
 		MaxConcurrentBuilds: 3,
 		ShutdownTimeout:     15 * time.Second,
