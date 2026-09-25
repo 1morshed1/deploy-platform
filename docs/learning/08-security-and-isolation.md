@@ -1,7 +1,7 @@
 # 08 — Tenant isolation and security
 
 **Code:** `internal/controller/resources.go`, `internal/api/ratelimit.go`,
-`internal/api/auth.go`, `deploy/k8s/trivy-scan-job.template.yaml`
+`internal/api/auth.go`, `deploy/security/trivy-scan-job.template.yaml`
 
 This is Phase 5 — the set of controls that separate a demo from something you'd let
 strangers push code to. Multi-tenancy means *hostile* neighbors must be assumed:
@@ -67,7 +67,7 @@ pods, host namespaces) that actually threaten the node. The full trade-off is
 
 ## Layer 7 — Image scanning (Trivy)
 
-`deploy/k8s/trivy-scan-job.template.yaml` scans a built image for CRITICAL CVEs and
+`deploy/security/trivy-scan-job.template.yaml` scans a built image for CRITICAL CVEs and
 exits non-zero if any are found. Wired in, it becomes a **gate**: build → scan → (only
 if clean) deploy. The `--exit-code=1` contract is what lets the worker treat a
 failed scan as a failed build.

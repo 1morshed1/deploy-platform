@@ -1,0 +1,103 @@
+# RBAC for the platform's three service accounts.
+#
+# Principle of least privilege: each binary gets exactly the permissions it needs.
+# - api    : no cluster access at all (it only talks to Postgres/Redis).
+# - worker : create build Jobs + read pod logs + manage TenantApps + read Deployments.
+# - operator: full control over the resources it reconciles, plus leases for
+#             leader election.
+#
+# If you ever see a "forbidden" error from the worker or operator, it's almost
+# always a missing rule here, not a code bug (see learning doc 04).
+
+# --- Service accounts -----------------------------------------------------
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: platform-api
+  namespace: platform-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: platform-worker
+  namespace: platform-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: platform-operator
+  namespace: platform-system
+---
+# --- Worker permissions (cluster-wide: it works across many namespaces) ----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: platform-worker
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["create", "get", "delete"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["create", "get", "list", "watch", "delete"]
+  - apiGroups: ["platform.example.com"]
+    resources: ["tenantapps"]
+    verbs: ["create", "get", "list", "update", "patch", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: platform-worker
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: platform-worker
+subjects:
+  - kind: ServiceAccount
+    name: platform-worker
+    namespace: platform-system
+---
+# --- Operator permissions -------------------------------------------------
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: platform-operator
+rules:
+  - apiGroups: ["platform.example.com"]
+    resources: ["tenantapps", "tenantapps/status", "tenantapps/finalizers"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["namespaces", "services", "resourcequotas"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses", "networkpolicies"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+  # Leader election uses coordination Leases.
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: platform-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: platform-operator
+subjects:
+  - kind: ServiceAccount
+    name: platform-operator
+    namespace: platform-system

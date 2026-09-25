@@ -1,0 +1,70 @@
+# The API server: Deployment + Service + Ingress.
+#
+# Horizontally scalable (2 replicas here) because it is stateless — all state lives
+# in Postgres/Redis. It needs no cluster RBAC.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-api
+  namespace: platform-system
+  labels: { app: platform-api }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: platform-api }
+  template:
+    metadata:
+      labels: { app: platform-api }
+    spec:
+      serviceAccountName: platform-api
+      containers:
+        - name: api
+          image: deploy-platform-api:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef: { name: platform-config }
+            - secretRef: { name: platform-secrets }
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities: { drop: ["ALL"] }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: platform-api
+  namespace: platform-system
+spec:
+  selector: { app: platform-api }
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: platform-api
+  namespace: platform-system
+spec:
+  ingressClassName: nginx
+  rules:
+    # The control-plane API is served on its own hostname.
+    - host: api.apps.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: platform-api
+                port: { number: 80 }

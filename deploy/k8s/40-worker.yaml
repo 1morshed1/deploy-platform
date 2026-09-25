@@ -1,0 +1,30 @@
+# The worker: consumes build/teardown tasks and drives Kaniko + TenantApps.
+#
+# Single replica by default. Asynq itself limits concurrency (MAX_CONCURRENT_BUILDS)
+# within one worker; scale replicas out to increase total build throughput.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-worker
+  namespace: platform-system
+  labels: { app: platform-worker }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: platform-worker }
+  template:
+    metadata:
+      labels: { app: platform-worker }
+    spec:
+      serviceAccountName: platform-worker
+      containers:
+        - name: worker
+          image: deploy-platform-worker:dev
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: { name: platform-config }
+            - secretRef: { name: platform-secrets }
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities: { drop: ["ALL"] }

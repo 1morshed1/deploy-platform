@@ -1,0 +1,22 @@
+# Non-secret configuration for the platform binaries, projected as env vars.
+#
+# Secret values (DATABASE_URL, REDIS_PASSWORD, GITHUB_TOKEN, and the ecr-credentials
+# docker config) live in Secrets you create from deploy/secrets.example.yaml — never
+# commit real secrets. Edit the values below for your environment.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: platform-config
+  namespace: platform-system
+data:
+  HTTP_ADDR: ":8080"
+  REDIS_ADDR: "redis.platform-system.svc.cluster.local:6379"
+  PLATFORM_DOMAIN: "apps.example.com"
+  ECR_REGISTRY: "123456789012.dkr.ecr.us-east-1.amazonaws.com/tenants"
+  BUILD_NAMESPACE: "platform-builds"
+  SYSTEM_NAMESPACE: "platform-system"
+  INGRESS_CLASS: "nginx"
+  # Leave CLUSTER_ISSUER empty to disable TLS, or set a cert-manager ClusterIssuer.
+  CLUSTER_ISSUER: ""
+  RATE_LIMIT_PER_HOUR: "5"
+  MAX_CONCURRENT_BUILDS: "3"

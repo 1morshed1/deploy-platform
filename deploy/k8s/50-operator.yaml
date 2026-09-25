@@ -1,0 +1,41 @@
+# The operator: reconciles TenantApp custom resources into cluster resources.
+#
+# Runs 1 replica; leader election (enabled in cmd/operator) means you can run more
+# for availability and only one will be active. Exposes metrics (:8081) and health
+# probes (:8082).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-operator
+  namespace: platform-system
+  labels: { app: platform-operator }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: platform-operator }
+  template:
+    metadata:
+      labels: { app: platform-operator }
+    spec:
+      serviceAccountName: platform-operator
+      containers:
+        - name: operator
+          image: deploy-platform-operator:dev
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: { name: platform-config }
+          ports:
+            - { name: metrics, containerPort: 8081 }
+            - { name: health, containerPort: 8082 }
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8082 }
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet: { path: /readyz, port: 8082 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities: { drop: ["ALL"] }

@@ -1,0 +1,26 @@
+# Platform namespaces.
+#
+# - platform-system: runs the platform's own control plane (api, worker, operator)
+#   and holds the TenantApp custom resources.
+# - platform-builds: where Kaniko build Jobs run. It is exempt from restricted Pod
+#   Security because Kaniko needs to run as root (ADR 0007); it is isolated and
+#   its pods are short-lived.
+#
+# Tenant workload namespaces (tenant-<subdomain>) are NOT defined here — the
+# operator creates them dynamically, one per deployment.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform-system
+  labels:
+    app.kubernetes.io/part-of: deploy-platform
+    pod-security.kubernetes.io/enforce: baseline
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform-builds
+  labels:
+    app.kubernetes.io/part-of: deploy-platform
+    # Kaniko runs as root; allow it in this isolated, ephemeral namespace only.
+    pod-security.kubernetes.io/enforce: privileged
