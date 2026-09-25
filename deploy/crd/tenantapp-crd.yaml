@@ -1,0 +1,85 @@
+# CustomResourceDefinition for TenantApp.
+#
+# This teaches the Kubernetes API server about a brand-new resource type. Once
+# applied, `kubectl get tenantapps` works and the API server validates every
+# TenantApp against the OpenAPI schema below. The Go structs in
+# apis/platform/v1/tenantapp_types.go mirror this schema — keep them in sync.
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: tenantapps.platform.example.com
+spec:
+  group: platform.example.com
+  scope: Namespaced
+  names:
+    plural: tenantapps
+    singular: tenantapp
+    kind: TenantApp
+    shortNames:
+      - tapp
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      # Expose a /status subresource so the operator updates status independently
+      # of spec (and so a spec write doesn't clobber status and vice versa).
+      subresources:
+        status: {}
+      # These columns show up in `kubectl get tenantapps`.
+      additionalPrinterColumns:
+        - name: Subdomain
+          type: string
+          jsonPath: .spec.subdomain
+        - name: Phase
+          type: string
+          jsonPath: .status.phase
+        - name: URL
+          type: string
+          jsonPath: .status.url
+        - name: Age
+          type: date
+          jsonPath: .metadata.creationTimestamp
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              required:
+                - imageUri
+                - subdomain
+                - cpuLimit
+                - memoryLimit
+                - containerPort
+              properties:
+                imageUri:
+                  type: string
+                  description: Fully-qualified container image to run.
+                subdomain:
+                  type: string
+                  description: DNS label; the Ingress host is <subdomain>.<domain>.
+                replicas:
+                  type: integer
+                  default: 1
+                  minimum: 0
+                cpuLimit:
+                  type: string
+                  description: Per-pod CPU limit, e.g. "250m".
+                memoryLimit:
+                  type: string
+                  description: Per-pod memory limit, e.g. "256Mi".
+                containerPort:
+                  type: integer
+                  description: Port the app listens on inside the container.
+            status:
+              type: object
+              properties:
+                phase:
+                  type: string
+                message:
+                  type: string
+                url:
+                  type: string
+                observedGeneration:
+                  type: integer
+                  format: int64

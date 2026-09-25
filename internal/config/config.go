@@ -62,6 +62,14 @@ type Config struct {
 	// workloads run in their OWN per-tenant namespaces, created by the operator.
 	SystemNamespace string
 
+	// IngressClass is the ingressClassName the operator sets on tenant Ingresses
+	// (e.g. "nginx").
+	IngressClass string
+
+	// ClusterIssuer is the cert-manager ClusterIssuer used for automatic TLS.
+	// Empty disables TLS (the default for local dev without cert-manager).
+	ClusterIssuer string
+
 	// RateLimitPerHour is the number of deploy requests each tenant may make
 	// per rolling hour. The plan specifies 5.
 	RateLimitPerHour int
@@ -90,6 +98,8 @@ func Load() (*Config, error) {
 		ECRRegistry:         getEnv("ECR_REGISTRY", "registry.local/tenants"),
 		BuildNamespace:      getEnv("BUILD_NAMESPACE", "platform-builds"),
 		SystemNamespace:     getEnv("SYSTEM_NAMESPACE", "platform-system"),
+		IngressClass:        getEnv("INGRESS_CLASS", "nginx"),
+		ClusterIssuer:       getEnv("CLUSTER_ISSUER", ""),
 		RateLimitPerHour:    5,
 		MaxConcurrentBuilds: 3,
 		ShutdownTimeout:     15 * time.Second,
