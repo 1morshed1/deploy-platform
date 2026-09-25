@@ -1,0 +1,28 @@
+# Compiled binaries
+/bin/
+*.exe
+
+# Go build/test artifacts
+*.test
+*.out
+coverage.*
+
+# Local env / secrets — never commit real credentials
+.env
+.env.local
+*.tfvars
+!example.tfvars
+
+# Terraform state (contains secrets; belongs in remote backend)
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Editor noise
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# kubeconfig captured from kind
+kubeconfig
