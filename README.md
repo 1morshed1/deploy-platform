@@ -6,11 +6,10 @@
 Submit a GitHub repo URL → the platform detects the language, builds a container
 image, deploys it to Kubernetes, gives it a subdomain, and monitors it.
 
-This repository is a **learning-first, production-shaped** implementation of the
-project described in the original spec. Every non-obvious decision is
+This is a **production-shaped** Platform-as-a-Service. Every non-obvious decision is
 written down in [`docs/decisions/`](./docs/decisions) (ADRs) and every subsystem
-has a walkthrough in [`docs/learning/`](./docs/learning). If you are reading this
-to *learn* how a PaaS works, start with
+has a walkthrough in [`docs/learning/`](./docs/learning). To see how a PaaS works
+end to end, start with
 [`docs/learning/00-how-to-read-this-repo.md`](./docs/learning/00-how-to-read-this-repo.md).
 
 ---
