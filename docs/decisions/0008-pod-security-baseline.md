@@ -15,7 +15,7 @@ namespace via labels:
 - **restricted** — everything in baseline *plus* requires non-root users,
   `seccomp: RuntimeDefault`, dropping all capabilities, and read-only root fs.
 
-The plan calls for enforcing `restricted` on tenant namespaces. But tenant images
+The spec calls for enforcing `restricted` on tenant namespaces. But tenant images
 are arbitrary user code: many popular base images (the `nginx` official image, some
 Node images) **run as root by default**. Under enforced `restricted`, those pods
 are rejected at admission and the deployment simply fails — a bad experience for a

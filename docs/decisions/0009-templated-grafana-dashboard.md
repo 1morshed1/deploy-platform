@@ -5,7 +5,7 @@
 
 ## Context
 
-The plan suggests using Grafana's provisioning API to create a dashboard for each
+The spec suggests using Grafana's provisioning API to create a dashboard for each
 tenant when their app deploys, and storing the dashboard URL per deployment.
 
 ## Decision

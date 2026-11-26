@@ -5,7 +5,7 @@
 
 ## Context
 
-The plan requires limiting deploy requests to **5 per hour per tenant**. Deploys
+The spec requires limiting deploy requests to **5 per hour per tenant**. Deploys
 are expensive (they spin up build pods) and abuse-prone, so the limit protects
 the cluster. The API runs as multiple replicas, so the counter must be shared.
 

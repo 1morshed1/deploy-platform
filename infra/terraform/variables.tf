@@ -23,7 +23,7 @@ variable "vpc_cidr" {
 }
 
 variable "node_instance_type" {
-  description = "EC2 instance type for the managed node group. t3.medium ~= $30/mo (see plan's cost notes)."
+  description = "EC2 instance type for the managed node group. t3.medium ~= $30/mo (see spec's cost notes)."
   type        = string
   default     = "t3.medium"
 }

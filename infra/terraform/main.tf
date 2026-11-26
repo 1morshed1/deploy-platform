@@ -1,6 +1,6 @@
 # Infrastructure for the platform: VPC, EKS, ECR, Route53, and the nginx ingress
 # controller. This is a documented STARTING POINT — it provisions the cloud pieces
-# the plan calls for. Review costs before `terraform apply` (see the plan's cost
+# the spec calls for. Review costs before `terraform apply` (see the spec's cost
 # section; a single t3.medium node is ~$30/mo, plus the EKS control plane ~$73/mo).
 #
 # We use the community terraform-aws-modules for VPC and EKS because they encode a

@@ -28,7 +28,7 @@ type TenantAppSpec struct {
 // from the (imperative) build pipeline to the (declarative) operator.
 //
 // We implement a get-then-create-or-update rather than server-side apply to keep
-// the dependency surface small and the behavior obvious for learning purposes.
+// the dependency surface small and the behavior obvious.
 func ApplyTenantApp(ctx context.Context, dyn dynamic.Interface, namespace, name string, spec TenantAppSpec) error {
 	rc := dyn.Resource(platformv1.TenantAppGVR).Namespace(namespace)
 

@@ -78,7 +78,7 @@ func (s *Server) Deploy(c *gin.Context) {
 		return
 	}
 
-	// Build the row with platform defaults from the plan.
+	// Build the row with platform defaults from the spec.
 	d := &store.Deployment{
 		TenantID:     tenant.ID,
 		RepoURL:      req.RepoURL,

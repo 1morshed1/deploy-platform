@@ -88,7 +88,7 @@ func buildLabels(deploymentID string) map[string]string {
 	}
 }
 
-// KanikoJob builds the Job that runs Kaniko. See the plan and learning doc 03 for
+// KanikoJob builds the Job that runs Kaniko. See the spec and learning doc 03 for
 // the meaning of each argument.
 func KanikoJob(p KanikoParams) (*batchv1.Job, error) {
 	gitContext, err := GitContext(p.RepoURL, p.Branch)

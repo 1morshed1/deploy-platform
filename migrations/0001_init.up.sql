@@ -1,7 +1,7 @@
 -- 0001_init.up.sql
 -- Initial schema for the deploy platform control plane.
 --
--- This mirrors the schema in plan.md. A few learning notes are inline so the
+-- This mirrors the schema in the original spec. A few design notes are inline so the
 -- reasoning behind each column choice is visible next to the column itself.
 
 -- gen_random_uuid() lives in the pgcrypto extension on older Postgres and is

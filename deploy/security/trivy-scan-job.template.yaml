@@ -1,6 +1,6 @@
 # Trivy image-scan Job TEMPLATE.
 #
-# The plan calls for scanning every built image and rejecting any with CRITICAL
+# The spec calls for scanning every built image and rejecting any with CRITICAL
 # CVEs before deploy. This manifest is the shape of that scan. Placeholders in
 # {{ }} are substituted per build (image URI, deployment id).
 #

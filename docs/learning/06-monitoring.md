@@ -3,7 +3,7 @@
 **Code:** `deploy/monitoring/`
 
 Once a tenant's app is live, they want to see how it's doing: CPU, memory,
-restarts, request rate. This is Phase 4 of the plan.
+restarts, request rate. This is Phase 4 of the spec.
 
 ## The stack: kube-prometheus-stack
 
@@ -45,7 +45,7 @@ no manual export — the dashboard lives in Git and deploys with everything else
 
 ### One templated dashboard, not one per tenant
 
-The plan suggests provisioning a dashboard per tenant via Grafana's API. We instead
+The spec suggests provisioning a dashboard per tenant via Grafana's API. We instead
 ship **one dashboard with a `namespace` dropdown variable** (regex-filtered to
 `tenant-.*`). Selecting a tenant's namespace scopes all four panels — CPU, memory,
 restarts, HTTP rate — to that tenant. See [ADR 0009](../decisions/0009-templated-grafana-dashboard.md)
@@ -77,7 +77,7 @@ That link can be returned from the API without any per-tenant provisioning call.
 
 ## Tracing and logs (the other two pillars)
 
-The plan also calls for Jaeger (build-pipeline tracing) and Loki (log aggregation).
+The spec also calls for Jaeger (build-pipeline tracing) and Loki (log aggregation).
 Those follow the same pattern — install via Helm, discover via labels — and are
 noted here as the natural next additions. The build already emits structured JSON
 logs (slog) and writes build logs to Postgres for the SSE stream, so wiring Loki is

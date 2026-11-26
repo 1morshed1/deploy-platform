@@ -19,7 +19,7 @@ Provide **two local modes**:
 2. **kind** for a full local Kubernetes cluster, so the build→deploy→reconcile path
    can be exercised (`make kind-up`, `make deploy-platform`).
 
-The plan itself recommends kind for local development and a single small EKS node
+The spec itself recommends kind for local development and a single small EKS node
 for cloud testing; this ADR records how we operationalize that.
 
 ## Rationale

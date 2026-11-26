@@ -19,7 +19,7 @@ package. No ORM.
 - **The schema is tiny** — three tables. An ORM's value grows with schema
   complexity; here it would add a dependency and a layer of indirection for
   almost no payoff.
-- **SQL is a skill worth showing and learning.** This is a learning project; the
+- **Explicit SQL is easier to reason about.** The
   explicit `INSERT ... RETURNING` and indexed lookups teach more than
   `db.Create(&x)` hides.
 - **pgx is the best Postgres driver for Go** — fastest, with first-class support

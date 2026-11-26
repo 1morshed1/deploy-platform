@@ -39,7 +39,7 @@ and requires AWS credentials, so they are **not** run by CI:
 
 - **EKS, VPC, ECR, Route53, NLB ingress** — `infra/terraform`. `terraform plan`
   shows exactly what would be created; `apply` provisions it. Costs are noted in
-  `infra/terraform/main.tf` and the plan.
+  `infra/terraform/main.tf` and the spec.
 - **AWS ECR image deletion on teardown** — the `Builder.Teardown` registry-delete
   step is a **logged no-op stub**. Wiring it means calling the ECR
   `BatchDeleteImage` API with the AWS SDK; the DB row and cluster resources *are*

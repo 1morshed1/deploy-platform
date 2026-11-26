@@ -71,7 +71,7 @@ type Config struct {
 	ClusterIssuer string
 
 	// RateLimitPerHour is the number of deploy requests each tenant may make
-	// per rolling hour. The plan specifies 5.
+	// per rolling hour. The spec specifies 5.
 	RateLimitPerHour int
 
 	// MaxConcurrentBuilds caps how many builds Asynq processes at once. The

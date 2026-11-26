@@ -11,7 +11,7 @@ import (
 )
 
 // RateLimiter implements a simple fixed-window per-tenant rate limit backed by
-// Redis. The plan requires "5 deploy requests per hour per tenant".
+// Redis. The spec requires "5 deploy requests per hour per tenant".
 //
 // Why Redis and not an in-memory counter? The API is horizontally scaled (many
 // replicas). An in-memory counter would let a tenant get 5 deploys *per replica*.

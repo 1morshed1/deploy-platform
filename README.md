@@ -1,10 +1,13 @@
 # deploy-platform — a mini Vercel/Heroku (Platform-as-a-Service)
 
+[![CI](https://github.com/1morshed1/deploy-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/1morshed1/deploy-platform/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Submit a GitHub repo URL → the platform detects the language, builds a container
 image, deploys it to Kubernetes, gives it a subdomain, and monitors it.
 
 This repository is a **learning-first, production-shaped** implementation of the
-project described in [`plan.md`](./plan.md). Every non-obvious decision is
+project described in the original spec. Every non-obvious decision is
 written down in [`docs/decisions/`](./docs/decisions) (ADRs) and every subsystem
 has a walkthrough in [`docs/learning/`](./docs/learning). If you are reading this
 to *learn* how a PaaS works, start with
@@ -111,3 +114,7 @@ make build   # compiles all three binaries into ./bin
 make test    # go test ./...
 make lint    # go vet + gofmt check
 ```
+
+## License
+
+[MIT](LICENSE)

@@ -51,7 +51,7 @@ func NewBuildTask(p BuildPayload) (*asynq.Task, error) {
 	if err != nil {
 		return nil, fmt.Errorf("queue: marshal build payload: %w", err)
 	}
-	// MaxRetry(2) matches the Kaniko Job's backoffLimit in plan.md: three total
+	// MaxRetry(2) matches the Kaniko Job's backoffLimit in the original spec: three total
 	// attempts. Timeout guards against a build that hangs forever.
 	return asynq.NewTask(TypeBuildImage, body), nil
 }
